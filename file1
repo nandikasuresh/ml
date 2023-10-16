@@ -1,0 +1,157 @@
+#pca
+import numpy as np
+import pandas as pd
+from sklearn.preprocessing import StandardScaler
+from sklearn.decomposition import PCA
+
+data = pd.read_csv('car_data.csv') 
+
+columns_to_drop = ['Gender', 'Purchased','User ID']
+X = data.drop(columns=columns_to_drop,axis = 1)
+scaler = StandardScaler()
+X_scaled = scaler.fit_transform(X)
+
+components_no = int(input("Enter the number of components:"))
+pca = PCA(n_components = components_no)
+x_pca = pca.fit_transform(X_scaled)
+principal_components = pca.components_
+explained_variance = pca.explained_variance_ratio_
+
+print("Principal Components:")
+print(principal_components)
+print("Explained Variance:")
+print(explained_variance)
+
+
+
+OUTPUT:
+
+Enter the number of components:2
+Principal Components:
+[[ 0.70710678  0.70710678]
+ [ 0.70710678 -0.70710678]]
+Explained Variance:
+[0.58302112 0.41697888]
+
+#svd
+import numpy as np
+import pandas as pd
+from sklearn.preprocessing import StandardScaler
+from scipy.linalg import svd
+
+# Step 1: Import necessary libraries
+
+# Step 2: Load the CSV dataset
+data = pd.read_csv('car_data.csv')  # Replace 'your_dataset.csv' with your CSV file's path
+
+# Step 3: Preprocess the data (if necessary)
+
+# Example: Assuming you have a DataFrame with features in columns
+# and you want to standardize the data before performing SVD
+columns_to_drop = ['Gender', 'Purchased','User ID']
+X = data.drop(columns=columns_to_drop,axis = 1)
+scaler = StandardScaler()
+X_scaled = scaler.fit_transform(X)
+
+# Step 4: Perform SVD using SciPy
+U, S, VT = svd(X_scaled)
+
+# U: Left singular vectors
+# S: Singular values
+# VT: Right singular vectors
+
+# You can access the singular values and the components as needed for your analysis
+print("Singular Values:")
+print(S)
+print("Left Singular Vectors (U):")
+print(U)
+print("Right Singular Vectors (VT):")
+print(VT)
+
+
+
+
+OUTPUT:
+Singular Values:
+[34.14736058 28.87832692]
+Left Singular Vectors (U):
+[[-4.15313477e-02 -2.57437631e-02  2.60829507e-02 ... -3.26763549e-02
+   2.56651459e-02  1.14296321e-02]
+ [-1.77395517e-02 -2.04911854e-02 -4.40081687e-03 ...  6.88740149e-02
+   5.20489613e-02 -1.70628671e-03]
+ [ 1.79971736e-02 -1.94183962e-02  9.99305775e-01 ...  1.14169763e-03
+  -4.41091844e-04 -3.03258125e-04]
+ ...
+ [ 1.61092948e-02  7.44460349e-02  1.21487068e-03 ...  9.94228585e-01
+  -2.58580392e-03  5.17460147e-04]
+ [ 5.21054620e-02  2.54892019e-02 -3.75981420e-04 ... -2.73937428e-03
+   9.96773383e-01 -1.76013056e-04]
+ [ 8.02196017e-03 -8.33346830e-03 -3.03001554e-04 ...  4.85074056e-04
+  -2.04292190e-04  9.99867594e-01]]
+Right Singular Vectors (VT):
+[[ 0.70710678  0.70710678]
+ [-0.70710678  0.70710678]]
+
+ #decision tree
+ import numpy as np
+import pandas as pd
+from sklearn.model_selection import train_test_split
+from sklearn.tree import DecisionTreeClassifier
+from sklearn.metrics import accuracy_score, confusion_matrix, classification_report
+
+data = pd.read_csv('car_data.csv')
+columns_to_drop = ['Gender', 'Purchased','User ID']
+X = data.drop(columns=columns_to_drop,axis = 1)
+y = data['Purchased']
+print(X)
+print(y)
+
+df = pd.DataFrame(data)
+X_train, X_test, y_train, y_test = train_test_split(X, y, test_size = 0.4, random_state= 42)
+clf = DecisionTreeClassifier()
+clf.fit(X_train, y_train)
+y_pred = clf.predict(X_test)
+result_df = pd.DataFrame({'Actual': y_test, 'Predicted': y_pred})
+print(result_df)
+accuracy = accuracy_score(y_test, y_pred)
+confusion = confusion_matrix(y_test, y_pred)
+classification_report_str = classification_report(y_test, y_pred)
+
+print(f"Accuracy: {accuracy:.2f}")
+print("Confusion Matrix:")
+print(confusion)
+print("Classification Report:")
+print(classification_report_str)
+
+
+
+
+
+OUTPUT:
+Actual  Predicted
+521       0          0
+737       1          1
+740       0          0
+660       1          0
+411       0          1
+..      ...        ...
+56        1          1
+405       0          0
+442       0          0
+757       0          0
+997       1          1
+
+[400 rows x 2 columns]
+Accuracy: 0.86
+Confusion Matrix:
+[[213  18]
+ [ 37 132]]
+Classification Report:
+              precision    recall  f1-score   support
+
+           0       0.85      0.92      0.89       231
+           1       0.88      0.78      0.83       169
+
+    accuracy                           0.86       400
+   macro avg       0.87      0.85      0.86       400
+weighted avg       0.86      0.86      0.86       400
