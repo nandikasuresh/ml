@@ -1,0 +1,207 @@
+# -*- coding: utf-8 -*-
+"""
+Created on Sun Oct 15 16:11:32 2023
+
+@author: HP
+"""
+
+#method_3
+import pandas as pd
+from sklearn.preprocessing import StandardScaler
+from sklearn.decomposition import PCA
+import seaborn as sns
+
+# Load the data from a CSV file
+df = pd.read_csv('car_data.csv')
+
+columns_to_drop = ['Gender', 'Purchased','User ID']
+X = df.drop(columns=columns_to_drop,axis = 1)
+# Separate the feature data from the DataFrame
+#X = X.iloc[:, :-1]  # Assuming the last column is the target variable
+
+# Standardize the features
+scaler = StandardScaler()
+X_scaled = scaler.fit_transform(X)
+
+
+# Apply PCA
+pca = PCA(n_components=2)
+pca.fit(X_scaled)
+X_pca = pca.transform(X_scaled)
+X_pca = pd.DataFrame(X_pca, columns=['PC1', 'PC2'])
+
+# Check the correlation between features after PCA
+sns.heatmap(X_pca.corr())
+
+
+
+
+
+
+
+
+#method_1
+'''
+# Import necessary libraries
+from sklearn import datasets # to retrieve the iris Dataset
+import pandas as pd # to load the dataframe
+from sklearn.preprocessing import StandardScaler # to standardize the features
+from sklearn.decomposition import PCA # to apply PCA
+import seaborn as sns # to plot the heat maps
+
+#Load the Dataset
+iris = datasets.load_iris()
+#convert the dataset into a pandas data frame
+df = pd.DataFrame(iris['data'], columns = iris['feature_names'])
+#display the head (first 5 rows) of the dataset
+print(df.head())
+
+#Standardize the features
+#Create an object of StandardScaler which is present in sklearn.preprocessing
+scalar = StandardScaler() 
+scaled_data = pd.DataFrame(scalar.fit_transform(df)) #scaling the data
+print(scaled_data)
+
+#Check the Co-relation between features without PCA
+sns.heatmap(scaled_data.corr())
+
+#Applying PCA
+#Taking no. of Principal Components as 3
+pca = PCA(n_components = 3)
+pca.fit(scaled_data)
+data_pca = pca.transform(scaled_data)
+data_pca = pd.DataFrame(data_pca,columns=['PC1','PC2','PC3'])
+print(data_pca.head())
+
+#Checking Co-relation between features after PCA
+sns.heatmap(data_pca.corr())
+'''
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+#method_2
+'''
+import pandas as pd
+from sklearn.preprocessing import StandardScaler
+from sklearn.decomposition import PCA
+
+data = pd.read_csv('car_data.csv') 
+
+columns_to_drop = ['Gender', 'Purchased','User ID']
+X = data.drop(columns=columns_to_drop,axis = 1)
+scaler = StandardScaler()
+X_scaled = scaler.fit_transform(X)
+
+components_no = int(input("Enter the number of components:"))
+pca = PCA(n_components = components_no)
+x_pca = pca.fit_transform(X_scaled)
+principal_components = pca.components_
+explained_variance = pca.explained_variance_ratio_
+
+print("Principal Components:")
+print(principal_components)
+print("Explained Variance:")
+print(explained_variance)
+'''
+
+
+# -*- coding: utf-8 -*-
+"""
+Created on Sun Oct 15 17:52:22 2023
+
+@author: HP
+"""
+#method_2
+import numpy as np
+import pandas as pd
+from sklearn.preprocessing import StandardScaler
+
+# Load the data from a CSV file
+df = pd.read_csv('car_data.csv')
+
+# Drop non-numeric columns if necessary
+# columns_to_drop = ['NonNumericColumn1', 'NonNumericColumn2']
+# df = df.drop(columns=columns_to_drop, axis=1)
+
+columns_to_drop = ['Gender', 'Purchased','User ID']
+X = df.drop(columns=columns_to_drop,axis = 1)
+
+# Separate the feature data from the DataFrame
+X = X.values  # Extract the values as a NumPy array
+
+# Standardize the features
+scaler = StandardScaler()
+X_scaled = scaler.fit_transform(X)
+
+# Perform SVD
+U, S, Vt = np.linalg.svd(X_scaled, full_matrices=False)
+
+# U: Left singular vectors
+# S: Singular values
+# Vt: Right singular vectors
+
+# You can choose the number of components to retain and create reduced representations
+num_components = 2  # Change this to the desired number of components
+X_svd_reduced = np.dot(U[:, :num_components], np.dot(np.diag(S[:num_components]), Vt[:num_components, :]))
+
+# X_svd_reduced contains the data with reduced dimensionality
+
+# You can also visualize the singular values to determine the explained variance
+explained_variance = (S ** 2) / np.sum(S ** 2)
+print("Explained Variance Ratios:", explained_variance)
+
+
+
+
+
+
+
+
+#method_1
+'''
+import numpy as np
+from sklearn import datasets
+from sklearn.preprocessing import StandardScaler
+import matplotlib.pyplot as plt
+
+# Load the Iris dataset
+iris = datasets.load_iris()
+X = iris.data
+
+# Standardize the features
+scaler = StandardScaler()
+X_scaled = scaler.fit_transform(X)
+
+# Perform SVD
+U, S, Vt = np.linalg.svd(X_scaled, full_matrices=False)
+
+# Number of components to keep (e.g., 2 components)
+num_components = 2
+
+# Reconstruct the data using the selected components
+X_svd_reduced = np.dot(U[:, :num_components], np.dot(np.diag(S[:num_components]), Vt[:num_components, :]))
+
+# Plot the original data and the reconstructed data
+plt.figure(figsize=(12, 6))
+
+plt.subplot(1, 2, 1)
+plt.scatter(X_scaled[:, 0], X_scaled[:, 1], c=iris.target)
+plt.title("Original Data (2 Features)")
+
+plt.subplot(1, 2, 2)
+plt.scatter(X_svd_reduced[:, 0], X_svd_reduced[:, 1], c=iris.target)
+plt.title("SVD Reduced Data (2 Components)")
+
+plt.show()
+'''
